@@ -1,0 +1,9 @@
+To resolve the Prettier formatting errors in your project, follow these steps:
+
+1. **Run Prettier**: Use the Prettier CLI or an integrated development environment (IDE) extension to automatically format the files. This will fix indentation and spacing issues in both `ThemeSwitch.tsx` and `AuthorLayout.tsx`.
+
+2. **Check ESLint Configuration**: If you encounter persistent issues, consider reviewing your ESLint configuration to ensure it aligns with your Prettier settings. You may need to disable conflicting rules as suggested in the error message.
+
+3. **Manual Review**: After running Prettier, manually review the files to ensure that the formatting meets your project's style guidelines.
+
+No files need to be created or edited manually at this time.
