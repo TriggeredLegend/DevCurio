@@ -1,7 +1,7 @@
-// app/verify-email/page.tsx OR pages/verify-email.tsx
+'use client'
 
-import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams()
@@ -10,11 +10,11 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     if (token) {
-      // Buttondown already verifies the token on their end,
-      // so we can just show a success message.
-      setMessage('Your email has been successfully verified!')
+      // You can call your backend here if needed.
+      // For now, just show success message:
+      setMessage('✅ Your email has been successfully verified!')
     } else {
-      setMessage('Invalid or missing verification token.')
+      setMessage('❌ Invalid or missing verification token.')
     }
   }, [token])
 
