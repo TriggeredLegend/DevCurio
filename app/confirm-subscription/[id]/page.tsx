@@ -1,29 +1,35 @@
+// app/confirm-subscription/[id]/page.tsx
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
 
 export default function ConfirmSubscription() {
-  const router = useRouter()
-  const [id, setId] = useState<string | null>(null)
-  const [message, setMessage] = useState('Verifying your subscription...')
+  const { id } = useParams()
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
 
   useEffect(() => {
-    // The client-side code can't read params directly,
-    // so we get the id from the URL manually:
-    const url = new URL(window.location.href)
-    const segments = url.pathname.split('/')
-    const confirmationId = segments[segments.length - 1]
-    setId(confirmationId)
-
-    if (confirmationId) {
-      setMessage('🎉 Your subscription has been confirmed! Thank you for subscribing.')
+    async function verify() {
+      try {
+        const res = await fetch(`/api/verify-email?id=${id}`)
+        const data = await res.json()
+        if (data.success) {
+          setStatus('success')
+        } else {
+          setStatus('error')
+        }
+      } catch {
+        setStatus('error')
+      }
     }
-  }, [])
+    if (id) verify()
+  }, [id])
 
   return (
-    <main style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1>{message}</h1>
-    </main>
+    <div className="p-10 text-center">
+      {status === 'loading' && <p>Verifying your email...</p>}
+      {status === 'success' && <p className="text-green-500">Your email has been verified!</p>}
+      {status === 'error' && <p className="text-red-500">Verification failed. Please try again.</p>}
+    </div>
   )
 }
