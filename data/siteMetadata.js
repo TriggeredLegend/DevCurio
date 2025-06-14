@@ -1,6 +1,6 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'DevCurio - Learn, Build, Innovate with DevCurio',
+  title: 'DevCurio - Learn, Build, Innovate',
   author: 'DevCurio',
   headerTitle: 'DevCurio',
   description: 'Learn, Build, Innovate with DevCurio — Developer blogs, guides, and tools.',
@@ -15,7 +15,7 @@ const siteMetadata = {
   github: 'https://github.com/TriggeredLegend',
   x: 'https://x.com/_0xTriggered_',
   facebook: 'https://facebook.com',
-  youtube: 'https://youtube.com',
+  youtube: 'https://www.youtube.com/@DevCurio',
   linkedin: 'https://www.linkedin.com',
   instagram: 'https://www.instagram.com',
   medium: 'https://medium.com',
