@@ -1,1 +1,7 @@
-{}
+{
+  "ssh": 1,
+  "linux": 1,
+  "server": 1,
+  "terminal": 1,
+  "devops": 1
+}
