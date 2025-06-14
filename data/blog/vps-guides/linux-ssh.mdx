@@ -1,0 +1,98 @@
+---
+title: How to Access Your Server via SSH: A Complete Guide (CMD, PuTTY & More)
+date: '2025-06-14'
+tags: ['SSH', 'Linux', 'Server', 'Terminal', 'DevOps']
+draft: false
+summary: Learn how to securely access your Linux server using SSH with CMD, PuTTY, and modern SSH alternatives. Step-by-step instructions for Windows, macOS, and Linux users.
+---
+
+## Introduction
+
+Accessing your Linux VPS via SSH is the first step in managing your server. SSH (Secure Shell) gives you the full control over your virtual private server.
+
+In this guide, we'll walk you through **how to SSH into your VPS using Command Prompt, PuTTY, and other alternatives**.
+
+## What is SSH and Why Use It?
+
+SSH (Secure Shell) is a cryptographic protocol that allows you to **securely connect to your virtual private server** over the internet. Once you’reconnected, you can run commands, manage files, configure software and everything you want.
+
+## Prerequisites
+
+Before connecting to your VPS, ensure you have:
+
+- Your **VPS IP address** (e.g., `192.167.0.1`)
+- Your **username** (usually `root` for most VPS)
+- Your **SSH password** or **Private Key**
+- A Terminal or SSH client (we'll explore a few options below)
+
+## Method 1: Connect via Command Prompt (Windows)
+
+If you're running Windows 10 or later versions, you can use Command Prompt (CMD) easily without installing any third party software.
+
+### Steps:
+
+1. Open Command Prompt (Press `Windows + R`, type `cmd` and press Enter).
+2. Type in the following command:
+
+```ngnix
+ssh root@your-vps-ip
+```
+
+Replace your-vps-ip with your actual IP address. Example:
+
+```ngnix
+ssh root@192.168.0.1
+```
+
+3. If it's your first time connecting to the server, type yes to continue.
+4. Enter your password when prompted.
+
+You're in! You now have full remote control of your virtual private server.
+
+## Method 2: Use PuTTY (Beginner-Friendly SSH Client)
+
+[PuTTY](https://www.putty.org/) is a popular SSH client for Windows that provides a graphical interface for SSH connecting to your server.
+
+### Steps:
+
+1. Download and install [PuTTY](https://www.putty.org/).
+2. Open PuTTY.
+3. In the Host Name field, type:
+
+```css
+root@your-vps-ip
+```
+
+Or just your VPS IP, and set Port to `22`. 4. If you want to use an SSH key for connecting instead of a password which is more secure than password authentication, go to **Connection > **SSH** > Auth** > **Credentials** and browse for your private key file(.ppk extension). 5. Now, go back to the **Session** category in the left sidebar. 7. Click on **Open**. 8. If prompted with a security alert, click on **Yes** to trust the server. 9. Enter your username (usually `root`) and password (In case you didn't enter any SSH key) when prompted.
+
+You should now be connected to your server.
+
+## Alternatives: SSH Access on Other Operating Systems
+
+### Mac & Linux Terminal
+
+Both macOS and Linux comes with SSH pre-installed.
+
+```bash
+ssh root@your-vps-ip
+```
+
+Enter your password when prompted, and you’re in.
+
+### Termius (Cross-Platform SSH Manager)
+
+[Termius](https://termius.com/) is a modern SSH client available for almost all Operating Systems. It offers a user-friendly interface and advanced features like SSH key management.
+
+## Common SSH Troubleshooting Tips
+
+- **Connection timed out:** Make sure your VPS is running online and port 22 is open in the firewall.
+- **Permission denied:** Double-check your username/password or SSH key.
+- **Network issues:** Try restarting your router or connecting from a different network.
+
+## Final Thoughts
+
+SSH is the key to unlocking the full power of your VPS. It doesn't matter which method you use, its all about finding what works best for you.
+
+🔒 Pro Tip: Always use SSH keys instead of passwords for more secure logins.
+
+❤️ **DevCurio** brings you developer-friendly tutorials that help you launch and scale your ideas fast. **Bookmark us** and never search the same question twice.
