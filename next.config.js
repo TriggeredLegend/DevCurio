@@ -4,7 +4,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-// You might need to insert additional domains in script-src if you're using external services
+// Content Security Policy
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;
@@ -14,12 +14,13 @@ const ContentSecurityPolicy = `
   connect-src *;
   font-src 'self';
   frame-src giscus.app;
-`
+`.replace(/\n/g, '')
 
+// Security Headers
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
-    value: ContentSecurityPolicy.replace(/\n/g, ''),
+    value: ContentSecurityPolicy,
   },
   {
     key: 'Referrer-Policy',
@@ -49,11 +50,9 @@ const securityHeaders = [
 
 const output = process.env.EXPORT ? 'export' : undefined
 const basePath = process.env.BASE_PATH || undefined
-const unoptimized = process.env.UNOPTIMIZED ? true : undefined
+const unoptimized = !!process.env.UNOPTIMIZED
 
-/**
- * @type {import('next').NextConfig}
- */
+/** @type {import('next').NextConfig} */
 module.exports = () => {
   const plugins = [withContentlayer, withBundleAnalyzer]
 
@@ -62,6 +61,12 @@ module.exports = () => {
     basePath,
     reactStrictMode: true,
     trailingSlash: false,
+    modern: true, // Serve modern JS
+    experimental: {
+      legacyBrowsers: false, // Avoid serving legacy polyfills
+      optimizeCss: true,
+      serverActions: true,
+    },
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
@@ -74,7 +79,7 @@ module.exports = () => {
         },
         {
           protocol: 'https',
-          hostname: 'cdn.devcurio.com', // ✅ Add your own CDN or hosting domains here
+          hostname: 'cdn.devcurio.com',
         },
       ],
       unoptimized,
@@ -82,17 +87,25 @@ module.exports = () => {
     async headers() {
       return [
         {
+          source: '/(.*)\\.js',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable',
+            },
+          ],
+        },
+        {
           source: '/(.*)',
           headers: securityHeaders,
         },
       ]
     },
-    webpack: (config, options) => {
+    webpack: (config) => {
       config.module.rules.push({
         test: /\.svg$/,
         use: ['@svgr/webpack'],
       })
-
       return config
     },
   })
