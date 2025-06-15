@@ -61,11 +61,11 @@ module.exports = () => {
     basePath,
     reactStrictMode: true,
     trailingSlash: false,
-    modern: true, // Serve modern JS
+    // modern: true, // <-- remove this
     experimental: {
-      legacyBrowsers: false, // Avoid serving legacy polyfills
-      optimizeCss: true,
-      serverActions: true,
+      // legacyBrowsers: false, // <-- remove this
+      optimizeCss: true, // keep if your Next.js supports it, otherwise remove
+      serverActions: {}, // set to empty object or remove if not used
     },
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
