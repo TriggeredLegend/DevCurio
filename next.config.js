@@ -4,7 +4,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-// Content Security Policy
+// You might need to insert additional domains in script-src if you're using external services
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;
@@ -14,13 +14,12 @@ const ContentSecurityPolicy = `
   connect-src *;
   font-src 'self';
   frame-src giscus.app;
-`.replace(/\n/g, '')
+`
 
-// Security Headers
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
-    value: ContentSecurityPolicy,
+    value: ContentSecurityPolicy.replace(/\n/g, ''),
   },
   {
     key: 'Referrer-Policy',
@@ -48,11 +47,13 @@ const securityHeaders = [
   },
 ]
 
-const output = undefined
+const output = process.env.EXPORT ? 'export' : undefined
 const basePath = process.env.BASE_PATH || undefined
-const unoptimized = !!process.env.UNOPTIMIZED
+const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
-/** @type {import('next').NextConfig} */
+/**
+ * @type {import('next').NextConfig}
+ */
 module.exports = () => {
   const plugins = [withContentlayer, withBundleAnalyzer]
 
@@ -61,12 +62,6 @@ module.exports = () => {
     basePath,
     reactStrictMode: true,
     trailingSlash: false,
-    // modern: true, // <-- remove this
-    experimental: {
-      // legacyBrowsers: false, // <-- remove this
-      optimizeCss: true, // keep if your Next.js supports it, otherwise remove
-      serverActions: {}, // set to empty object or remove if not used
-    },
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
@@ -79,7 +74,7 @@ module.exports = () => {
         },
         {
           protocol: 'https',
-          hostname: 'cdn.devcurio.com',
+          hostname: 'cdn.devcurio.com', // ✅ Add your own CDN or hosting domains here
         },
       ],
       unoptimized,
@@ -87,25 +82,17 @@ module.exports = () => {
     async headers() {
       return [
         {
-          source: '/(.*)\\.js',
-          headers: [
-            {
-              key: 'Cache-Control',
-              value: 'public, max-age=31536000, immutable',
-            },
-          ],
-        },
-        {
           source: '/(.*)',
           headers: securityHeaders,
         },
       ]
     },
-    webpack: (config) => {
+    webpack: (config, options) => {
       config.module.rules.push({
         test: /\.svg$/,
         use: ['@svgr/webpack'],
       })
+
       return config
     },
   })
