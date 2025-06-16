@@ -1,0 +1,220 @@
+---
+title: 'VPS: Setting Up Image Hosting with Apache and PHP'
+date: '2025-06-16'
+tags: ['VPS', 'Apache', 'PHP', 'ShareX']
+draft: false
+summary: 'Information on setting up an Apache and PHP-based image hosting server with ShareX integration'
+---
+
+## Introduction
+
+This guide demonstrates the process of setting up an image hosting server on a Linux-based VPS and blend it with [ShareX](https://getsharex.com/) for seamless image uploads.
+
+## Prerequisites
+
+The following requirements are recommended to ensure best performance.
+
+#### Hardware Requirements:
+
+| Components | Minimum              | Recommended               |
+| ---------- | -------------------- | ------------------------- |
+| CPU        | 1x 1.5 GHz           | 2x 2.0+ GHz               |
+| RAM        | 1 GB                 | 2 GB                      |
+| Storage    | 10 GB                | 10+ GB ( based on usage ) |
+| Bandwidth  | 1 mbit/s (up & down) | 5 mbit/s (up & down)      |
+
+#### Software Requirements:
+
+| Platform         | Options                                        |
+| ---------------- | ---------------------------------------------- |
+| Operating System | Linux (Ubuntu, Debian, or CentOS recommended). |
+| Web server       | Apache                                         |
+| Additional Tools | PHP                                            |
+| Optional         | SSL/TLS for secure file uploads.               |
+
+## Preparation
+
+A connection has to be established via a SSH client in order to begin the setup on your Linux server. Please view our [Initial access (SSH)](linux-ssh.mdx) guide to learn more about this.
+
+Once the connection is established, you can begin to install the necessary packages that are required for the actual setup.
+
+## Step 1: Installing Dependencies
+
+First, you have to install the required dependencies and web server before starting the actual setup. Use the following commands to install all the required dependencies in your Linux server.
+
+```bash
+sudo apt update && sudo apt install apache2 php libapache2-mod-php unzip curl -y
+```
+
+Enable required Apache modules:
+
+```bash
+sudo a2enmod rewrite ssl
+sudo systemctl restart apache2
+```
+
+## Step 2: Create Upload Folder and Upload Script
+
+Create the `uploads` directory:
+
+```
+sudo mkdir -p /var/www/html/uploads
+sudo chown -R www-data:www-data /var/www/html/uploads
+```
+
+Open the `upload.php` script file using the nano file editor:
+
+```
+sudo nano /var/www/html/upload.php
+```
+
+Now, paste the following script into the script file:
+
+```php
+<?php
+if(isset($_FILES['image'])){
+    $target_dir = "uploads/";
+    $target_file = $target_dir . basename($_FILES["image"]["name"]);
+
+    if(move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)){
+        echo "http://YOUR_DOMAIN_OR_IP/" . $target_file; // Replace with your real IP
+    } else {
+        echo "File upload failed!";
+    }
+}
+?>
+```
+
+Save the file (`Ctrl+O`, then `Enter`) and exit (`Ctrl+X`).
+
+Set permissions:
+
+```bash
+sudo chmod -R 755 /var/www/html/uploads
+```
+
+## Step 3: Auto Expiry Script (Cron Job)
+
+To automatically delete expired images( _It'll automatically delete images that are older than the time you specify_), create a script that regularly checks for expired files and removes them as needed ( **Only do this if you want to delete older images. If you want to keep them, skip this step** ). Create a new script file:
+
+```bash
+sudo nano /usr/local/bin/expire-images.sh
+```
+
+Add the following code to the script:
+
+```bash
+#!/bin/bash
+UPLOAD_DIR="/var/www/html/uploads"
+
+find "$UPLOAD_DIR" -type f -name "*.meta" | while read meta; do
+    expiry=$(cat "$meta")
+    [ "$(date +%s)" -gt "$expiry" ] && {
+        file="${meta%.meta}"
+        rm -f "$file" "$meta"
+        echo "Deleted expired image: $file"
+    }
+done
+```
+
+Save and exit the file.
+
+Make the script executable:
+
+```bash
+sudo chmod +x /usr/local/bin/expire-images.sh
+```
+
+Now, set up a cron job to run this script daily. Open the crontab editor:
+
+```bash
+sudo crontab -e
+```
+
+Add the following line to run the cleanup script every day at midnight:
+
+```bash
+echo "0 3 * * * root /usr/local/bin/expire-images.sh" | sudo tee /etc/cron.d/image-cleanup
+```
+
+Save and exit the crontab editor.
+
+## Step 4: Domain & SSL Setup
+
+**_If you don't have a domain, you can skip this step and use your server's IP address instead._**
+
+1. Point Domain to Server IP:
+   Update DNS A record for `yourdomain.com` to your VPS IP.
+
+2. Enable Virtual Host with SSL:
+   Create Apache config file:
+
+```bash
+sudo nano /etc/apache2/sites-available/uploader.conf
+```
+
+Add the following configuration:
+
+```apache
+<VirtualHost *:80>
+    ServerName yourdomain.com
+    DocumentRoot /var/www/html
+
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName yourdomain.com
+    DocumentRoot /var/www/html
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/yourdomain.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/yourdomain.com/privkey.pem
+
+    <Directory /var/www/html>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+Enable the site and restart Apache:
+
+```bash
+sudo a2ensite uploader.conf
+sudo systemctl reload apache2
+```
+
+3. Install SSL Certificate (Let’s Encrypt):
+
+```bash
+sudo apt install certbot python3-certbot-apache -y
+sudo certbot --apache -d yourdomain.com
+```
+
+Follow the prompts to set up SSL.
+
+## Step 5: Configure ShareX
+
+1. Open ShareX:
+   Go to Destinations > Custom uploader settings...
+2. Create a New Uploader:
+
+- Name: Give it a name as you wish.
+- Request URL: Enter your server's upload script URL (e.g., `http://yourdomain.com/upload.php`).
+- Method: Set to `POST`.
+- File Form Name: Set it to the input field name (`image`).
+- Destination type: Tick the image uploader option.
+
+![ShareX Custom Uploader Settings](/public/static/images/vps-image-hosting-apache-php/ShareX-Custom-Uploader-Settings.webp)
+
+## Step 6: Testing
+
+Upload an image using ShareX. Verify it appears in the upload directory.
+
+## Conclusion
+
+Congratulations, you have successfully setuped image hosting on your Linux server which has introduced searmless image hosting using ShareX!
