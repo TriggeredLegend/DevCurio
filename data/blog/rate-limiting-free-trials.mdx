@@ -1,0 +1,147 @@
+---
+title: 'How to Prevent Abuse with Rate Limiting in Free Trials'
+date: '2025-07-12'
+tags: ['Learning', 'SaaS', 'API', 'Coding', 'Backend']
+draft: false
+summary: 'Learn how to implement rate limiting in your SaaS app to prevent abuse, protect your infrastructure, and ensure a fair free trial experience.'
+---
+
+> Free trials are great for onboarding—but without proper limits, they can drain your resources or invite abuse.
+
+If you're building a SaaS product, chances are you're offering a **free trial**. But here's the catch: without **rate limiting**, you're leaving the door wide open for spam, overuse, or even full-blown abuse.
+
+In this post, you’ll learn the **why**, **what**, and **how** of implementing rate limiting to **protect your SaaS infrastructure**—with examples in Node.js, Supabase, and Redis.
+
+---
+
+## 🧠 Why Rate Limiting Matters
+
+Let’s say your app gives new users 100 API calls as part of a trial. What’s stopping someone from:
+
+- Creating 100 fake accounts?
+- Spamming your endpoints?
+- Exploiting generous trial features with bots or scripts?
+
+Without limits, your system becomes a **honeypot for abuse**—costing you server time, bandwidth, and sometimes, your sanity.
+
+Rate limiting is your **first layer of defense**.
+
+---
+
+## 🛠️ Types of Rate Limiting
+
+There’s no one-size-fits-all, but here are the common strategies:
+
+| Type                  | What it does                                          | Best for                |
+| --------------------- | ----------------------------------------------------- | ----------------------- |
+| **Per-IP**            | Limits requests from a single IP                      | APIs, public endpoints  |
+| **Per-User**          | Limits requests tied to an authenticated user         | Logged-in users         |
+| **Global**            | Limits total requests per app/account per day/hour    | Fair usage across plans |
+| **Burst + Sustained** | Allows short spikes, but enforces a long-term average | Real-time UIs, bots     |
+
+For **free trials**, you should implement at least **per-user + global** limits.
+
+---
+
+## 🧪 A Simple Implementation in Node.js + Redis
+
+Let’s build a basic rate limiter that allows **100 API calls/day per user**.
+
+### 1. Install dependencies
+
+```bash
+npm install ioredis express
+```
+
+2. Set up Redis
+   Create a `lib/redis.ts`:
+
+```typescript
+import Redis from 'ioredis'
+export const redis = new Redis(process.env.REDIS_URL!)
+```
+
+3. Create the rate limiter middleware
+
+```typescript
+// middleware/rateLimiter.ts
+import { redis } from '../lib/redis'
+import { Request, Response, NextFunction } from 'express'
+
+export const rateLimiter = (limit: number) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id || req.ip // fallback for anonymous users
+    const key = `rate:${userId}`
+
+    const usage = await redis.incr(key)
+
+    if (usage === 1) {
+      await redis.expire(key, 60 * 60 * 24) // 24 hours
+    }
+
+    if (usage > limit) {
+      return res.status(429).json({ error: 'Rate limit exceeded' })
+    }
+
+    next()
+  }
+}
+```
+
+4. Apply it to your routes
+
+```typescript
+app.use('/api/free-endpoint', rateLimiter(100), handlerFunction)
+```
+
+Just like that, each user gets 100 calls/day.
+
+## 🧰 Rate Limiting with Supabase
+
+Supabase doesn’t offer built-in rate limiting (yet), but you can:
+
+- Store a command_count column in your users table
+
+- Increment it with Row Level Security (RLS)
+
+- Use a Postgres function to block requests after the limit
+
+- Or, set up a reverse proxy with Nginx or Cloudflare to rate-limit IPs.
+
+## ✅ Best Practices
+
+- Always rate-limit free trial users more strictly than paid ones
+
+- Log abuses for future banning or CAPTCHA triggers
+
+- Combine with email verification to reduce fake signups
+
+- Use tokens or credits instead of raw time-based access (e.g., “50 commands”)
+
+- Display usage clearly on the UI—transparency builds trust
+
+## 🔐 Bonus: Lock Accounts After Limit
+
+You can also automate account locking or downgrades:
+
+```typescript
+if (user.command_count >= 100) {
+  await supabase.from('users').update({ status: 'locked' }).eq('id', user.id)
+}
+```
+
+Then show a message like: "You've reached your free trial limit. Upgrade to continue!"
+
+## Final Thoughts
+
+You don’t need an enterprise budget to enforce fair usage.
+
+**With a few lines of code, you can:**
+
+- Protect your app from abusers
+
+- Keep costs predictable
+
+- Create a better experience for genuine users
+
+Rate limiting isn’t about being strict—it’s about being smart.
