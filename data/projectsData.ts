@@ -7,20 +7,16 @@ interface Project {
 
 const projectsData: Project[] = [
   {
-    title: 'A Search Engine',
-    description: `What if you could look up any information in the world? Webpages, images, videos
-    and more. Google has many features to help you find exactly what you're looking
-    for.`,
-    imgSrc: '/static/images/google.png',
-    href: 'https://www.google.com',
+    title: 'PteroCore',
+    description: `PteroCore is an AI addon for Pterodactyl that lets users manage Minecraft servers using simple text commands—no tech skills needed. Fast, secure, and effortless.`,
+    imgSrc: '/static/images/pterocore.png',
+    href: 'https://www.devcurio.com/projects',
   },
   {
-    title: 'The Time Machine',
-    description: `Imagine being able to travel back in time or to the future. Simple turn the knob
-    to the desired date and press "Go". No more worrying about lost keys or
-    forgotten headphones with this simple yet affordable solution.`,
-    imgSrc: '/static/images/time-machine.jpg',
-    href: '/blog/the-time-machine',
+    title: 'CurioHost',
+    description: `CurioHost is a fast and reliable hosting platform built for developers and creators. From game servers to web apps, it offers simple, scalable solutions with full control and no hassle.`,
+    imgSrc: '/static/images/curiohost.png',
+    href: 'https://host.devcurio.com/',
   },
 ]
 
