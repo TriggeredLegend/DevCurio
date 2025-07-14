@@ -12,11 +12,11 @@ export default function Footer() {
           <SocialIcon kind="facebook" href={siteMetadata.facebook} size={6} />
           <SocialIcon kind="youtube" href={siteMetadata.youtube} size={6} />
           <SocialIcon kind="linkedin" href={siteMetadata.linkedin} size={6} />
-          {/* Removed twitter, bluesky, and threads */}
           <SocialIcon kind="x" href={siteMetadata.x} size={6} />
           <SocialIcon kind="instagram" href={siteMetadata.instagram} size={6} />
           <SocialIcon kind="medium" href={siteMetadata.medium} size={6} />
         </div>
+
         <div className="mb-2 flex space-x-2 text-sm text-gray-500 dark:text-gray-400">
           <div>{siteMetadata.author}</div>
           <div>{` • `}</div>
@@ -24,8 +24,11 @@ export default function Footer() {
           <div>{` • `}</div>
           <Link href="/">{siteMetadata.title}</Link>
         </div>
-        <div className="mb-8 text-sm text-gray-500 dark:text-gray-400">
+
+        <div className="mb-8 flex space-x-4 text-sm text-gray-500 dark:text-gray-400">
           <Link href="https://devcurio.com/privacy-policy">Privacy Policy</Link>
+          <span>•</span>
+          <Link href="https://www.devcurio.com/cookie-policy">Cookie Policy</Link>
         </div>
       </div>
     </footer>
