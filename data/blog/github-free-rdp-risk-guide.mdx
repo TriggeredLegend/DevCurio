@@ -1,0 +1,126 @@
+---
+title: 'This GitHub Script Gives You a Free RDP — But at What Cost?'
+date: '2025-07-21'
+tags: ['Learning', 'Mistakes', 'AI', 'GitHub', 'RDP']
+draft: false
+summary: 'A very trending GitHub Actions trick seen on YouTube lets you create a free Windows RDP in minutes—but it could get your GitHub account banned. Learn how it works, the risks, and safer alternatives for making a rdp.'
+---
+
+## ⚠️ Free RDP Using GitHub? Think Twice.
+
+Across GitHub itself and YouTube, a very clever but too risky trend has caught the attention of devs and tech hobbyists: using the **GitHub Actions** to make a free Windows **Remote Desktop (RDP)** session — with no credit card required.
+
+It sounds like a dream:
+
+- No credit card signup
+- Instant Windows RDP access
+- No billing or limits — just “hack the CI system”
+
+**But here’s the truth:**
+
+> ⚠️ **Abusing GitHub Actions for free RDP is a direct violation of GitHub’s Terms of Service, and will likely get your GitHub account banned.**
+
+Let’s break it down how this works, what dangers it poses, and most importantly — what **legitimate alternatives** exist if you truly need a free RDP.
+
+---
+
+## 🧠 How the GitHub Free RDP Trick Works
+
+These scripts are structured to:
+
+1. **Run a GitHub Actions workflow** on a Windows runner (which GitHub provides for free).
+2. **Download a tunneling tool** like ngrok that allows external access.
+3. **Enable Remote Desktop Protocol (RDP)** on the machine.
+4. **Open port 3389 (RDP port)** via the tunnel so you can connect from your device.
+5. **Set a password** for the system's default user so you can log in.
+
+In under 2 minutes, you get temporary access to a cloud-hosted Windows RDP that behaves just like a VPS — but all through GitHub's CI/CD platform.
+
+---
+
+## ❌ Why This Is a Serious Violation
+
+While being technically impressive, this use case **abuses GitHub’s infrastructure**.
+
+GitHub Actions is built for:
+
+- Automating tests
+- Building code
+- Deploying projects
+
+It is **not intended** for:
+
+- Hosting personal desktops
+- Running long-lived remote sessions
+- Exploiting runners for non-CI/CD tasks
+
+> GitHub explicitly prohibits misuse of its runners in its [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-acceptable-use-policies). Scripts that run persistent desktops or tunnels **violate these policies.**
+
+### Real Risks Include:
+
+- ✅ Account suspension or permanent ban from GitHub
+- ✅ Loss of private and public repositories
+- ✅ Revocation of GitHub Actions access
+- ✅ Removal from GitHub’s community ecosystem
+
+In some cases, developers have lost years of work by getting locked out over one “quick test.”
+
+---
+
+## 🔍 How GitHub Detects and Blocks It
+
+GitHub has an **automated systems** that monitors for:
+
+- Long-running workflows with network tunneling
+- Scripts using tools like `ngrok`, `teleport`, or `xrdp`
+- Unusual traffic or port exposure patterns
+
+Even if you keep your repository private, your workflows **can still be flagged** by GitHub.
+
+And once your account is flagged and reviewed, you’ll get **no warning before suspension.**
+
+---
+
+## ✅ Safer Alternatives for Free RDP & Cloud Access
+
+If you genuinely need a remote Windows environment for learning, development, or testing — **there are free, legal options.**
+
+Here are the best ones as of 2025:
+
+| Cloud Provider         | OS Options     | Free Resources                  | Duration    | Notes                      |
+| ---------------------- | -------------- | ------------------------------- | ----------- | -------------------------- |
+| **Oracle Cloud**       | Windows, Linux | 2 AMD CPUs, 1GB RAM             | Always Free | Great for long-term use    |
+| **AWS Free Tier**      | Windows, Linux | t2.micro (1vCPU, 1GB RAM)       | 12 Months   | Requires credit card       |
+| **Google Cloud**       | Windows, Linux | $300 credit + e2-micro instance | 90 Days     | Generous free credits      |
+| **Azure for Students** | Windows        | $100 credits, no card needed    | 12 Months   | .edu email or verification |
+
+These platforms offer real virtual machines with persistent storage, static IPs, and true admin access — **without risking your GitHub account.**
+
+---
+
+## 🛠️ Why Relying on GitHub for RDP is Unsustainable
+
+Even though the GitHub trick works once, it’s not a long-term solution.
+
+- 🕓 **Workflows auto-terminate** after a few hours.
+- 🔐 **No persistent storage** — your files are lost when the runner shuts down.
+- 📡 **Bandwidth isn't unlimited** — performance isn’t reliable.
+- ⚖️ **Ethical concerns** — abusing a free service hurts the developer community.
+
+And again — one flagged repository, and your entire GitHub profile could be a history.
+
+---
+
+## 💬 Final Thoughts
+
+Using GitHub Actions to create free RDPs sessions might look like a harmless trick — but it's not worth the risk.
+
+You could lose:
+
+- Your projects
+- Your reputation
+- Access to one of the most important developer tools in the world
+
+Instead, invest your time in learning how to deploy real virtual machines using trusted platforms like Oracle, AWS, or Azure.
+
+You’ll build skills that scale — and you’ll sleep better knowing you’re not one workflow away from a GitHub permanent ban.
