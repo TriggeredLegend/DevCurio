@@ -2,10 +2,8 @@ import 'css/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
 
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import { Analytics as VercelAnalytics } from '@vercel/analytics/next'
+import Script from 'next/script'
 import { Space_Grotesk } from 'next/font/google'
-import { Analytics as PlinyAnalytics, AnalyticsConfig } from 'pliny/analytics'
 import { SearchProvider, SearchConfig } from 'pliny/search'
 import Header from '@/components/Header'
 import SectionContainer from '@/components/SectionContainer'
@@ -106,10 +104,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </SectionContainer>
 
-          {/* Analytics components */}
-          <PlinyAnalytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
-          <VercelAnalytics />
-          <SpeedInsights />
+          {/* Google Analytics */}
+          <Script
+            strategy="afterInteractive"
+            src="https://www.googletagmanager.com/gtag/js?id=G-69301ZW0CK"
+          />
+          <Script
+            id="google-analytics"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-69301ZW0CK');
+              `,
+            }}
+          />
         </ThemeProviders>
       </body>
     </html>
